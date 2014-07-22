@@ -1,0 +1,107 @@
+#!/bin/sh
+#
+# watchgit daemon to watch and update git repositories
+#
+# chkconfig:   - 50 50
+# description: A daemon to watch and update git repositories
+#
+# processname: /usr/sbin/watchgit
+# config: /etc/watchgit.conf
+# config: /etc/sysconfig/watchgit
+# pidfile: /var/run/watchgit/watchgit.pid
+
+### BEGIN INIT INFO
+# Provides: watchgit
+# Required-Start: $local_fs $network
+# Required-Stop: $local_fs
+# Should-Start: $syslog
+# Should-Stop: $network $syslog
+# Default-Start: 2 3 4 5
+# Default-Stop: 0 1 6
+# Short-Description: Start and stop watchgit
+# Description: A daemon to watch and update git repositories
+### END INIT INFO
+
+# Source function library.
+. /etc/rc.d/init.d/functions
+
+exec="/usr/sbin/watchgit"
+prog="watchgit"
+config="/etc/watchgit.conf"
+lockfile=/var/lock/subsys/$prog
+pidfile=/var/run/watchgit.pid
+
+[ -e /etc/sysconfig/watchgit ] && . /etc/sysconfig/watchgit
+
+start() {
+    [ -x $exec ] || exit 5
+    echo -n $"Starting $prog: "
+    daemon $exec -c $config -p $pidfile start
+    retval=$?
+    echo
+    [ $retval -eq 0 ] && touch $lockfile
+    return $retval
+}
+
+stop() {
+    echo -n $"Stopping $prog: "
+    killproc -p $pidfile $prog
+    retval=$?
+    echo
+    [ $retval -eq 0 ] && rm -f $lockfile
+    return $retval
+}
+
+restart() {
+    stop
+    start
+}
+
+reload() {
+    restart
+}
+
+force_reload() {
+    restart
+}
+
+rh_status() {
+    status -p $pidfile $prog
+}
+
+rh_status_q() {
+    rh_status >/dev/null 2>&1
+}
+
+
+case "$1" in
+    start)
+        rh_status_q && exit 0
+        $1
+        ;;
+    stop)
+        rh_status_q || exit 0
+        $1
+        ;;
+    restart)
+        $1
+        ;;
+    reload)
+        rh_status_q || exit 7
+        $1
+        ;;
+    force-reload)
+        force_reload
+        ;;
+    status)
+        rh_status
+        ;;
+    condrestart|try-restart)
+        rh_status_q || exit 0
+        restart
+        ;;
+    *)
+        echo $"Usage: $0 {start|stop|status|restart|condrestart|try-restart|reload|force-reload}"
+        exit 2
+esac
+exit $?
