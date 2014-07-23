@@ -1,6 +1,6 @@
 --- a/watchgit.conf
 +++ b/watchgit.conf
-@@ -2,7 +2,7 @@
+@@ -2,11 +2,11 @@
  interval      = 5
  ref           = master
  reset         = true
@@ -8,5 +8,11 @@
 +logfile       = /var/log/watchgit/watchgit.log
  loglevel      = info
  skip_on_error = false
- user          = nobody
+-user          = nobody
+-group         = nogroup
++user          = watchgit
++group         = watchgit
+ 
+ [watchgit]
+ interval      = 300
 

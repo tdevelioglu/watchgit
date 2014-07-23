@@ -8,8 +8,8 @@
 %global realname watchgit
 
 Summary:       Keep local git repositories in sync
-Name:          python-watchgit
-Version:       0.1.1
+Name:          watchgit
+Version:       0.2.0
 Release:       1%{?dist}
 Source0:       https://github.com/tdevelioglu/watchgit/archive/%{version}.tar.gz
 License:       ASL 2.0
@@ -19,7 +19,7 @@ BuildArch:     noarch
 BuildRequires: python
 BuildRequires: python-setuptools
 Requires:      python-daemon
-Requires:      python-git
+Requires:      python-GitPython
 
 # Redhat-friendly config file patch
 Patch1: conffile.patch
@@ -40,7 +40,8 @@ install -D -m 0755 watchgit.py %{buildroot}%{_sbindir}/watchgit
 install -D -m 0755 %{confdir}/init %{buildroot}/%{_initrddir}/watchgit
 install -D -m 0644 %{confdir}/sysconfig %{buildroot}/%{_sysconfdir}/sysconfig/watchgit
 install -D -m 0644 watchgit.conf %{buildroot}%{_sysconfdir}/watchgit.conf
-install -d -m 755 %{buildroot}%{_localstatedir}/log/watchgit
+install -d -m 0755 %{buildroot}%{_localstatedir}/log/watchgit
+install -d -m 0755 %{buildroot}%{_localstatedir}/run/watchgit
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -52,7 +53,13 @@ rm -rf $RPM_BUILD_ROOT
 %{_initrddir}/watchgit
 %config(noreplace) %{_sysconfdir}/watchgit.conf
 %config(noreplace) %{_sysconfdir}/sysconfig/watchgit
+%defattr(-, watchgit, watchgit, 0755)
 %dir %attr(0755, root, root) %{_localstatedir}/log/watchgit
+%dir %attr(0755, root, root) %{_localstatedir}/run/watchgit
+
+%pre
+getent passwd watchgit &>/dev/null || \
+useradd -r -s /sbin/nologin -d %{_localstatedir}/run/watchgit -C "Watchgit" watchgit &>/dev/null
 
 %post
 if [ "$1" -ge 1 ]; then
@@ -78,5 +85,5 @@ if [ "$1" -eq 0 ] ; then
 fi
 
 %changelog
-* Thu Jul 17 2014 Taylan Develioglu <taylan.develioglu@booking.com> -  0.1.1-1
-- Bump to 0.1.1
+* Wed Jul 23 2014 Taylan Develioglu <taylan.develioglu@booking.com> -  0.2.0-1
+- Bump to 0.2.0
