@@ -159,6 +159,9 @@ class WatchGit(object):
             # checks.
             time.sleep(1)
 
+    def stop(self):
+        os.seteuid(0)
+        sys.exit()
 
 class GentleConfigParser(ConfigParser.RawConfigParser):
     def get(self, section, option, default=None):
@@ -244,11 +247,14 @@ if __name__ == "__main__":
 
         pidfile = PIDLockFile(args.pidfile)
         logger.info('Launching watchgit daemon')
+        watchgit = WatchGit(config)
         if args.foreground is True:
-            WatchGit(config).run()
+            watchgit.run()
         else:
-            with daemon.DaemonContext(files_preserve=[fh.stream], pidfile=pidfile):
-                WatchGit(config).run()
+            with daemon.DaemonContext(files_preserve=[fh.stream],
+                    signal_map={15: lambda signum, frame: watchgit.stop()},
+                    pidfile=pidfile):
+                watchgit.run()
 
     if args.command == 'stop':
         if os.path.exists(args.pidfile):
