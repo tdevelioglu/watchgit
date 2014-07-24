@@ -41,7 +41,6 @@ install -D -m 0755 %{confdir}/init %{buildroot}/%{_initrddir}/watchgit
 install -D -m 0644 %{confdir}/sysconfig %{buildroot}/%{_sysconfdir}/sysconfig/watchgit
 install -D -m 0644 watchgit.conf %{buildroot}%{_sysconfdir}/watchgit.conf
 install -d -m 0755 %{buildroot}%{_localstatedir}/log/watchgit
-install -d -m 0755 %{buildroot}%{_localstatedir}/run/watchgit
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -55,7 +54,6 @@ rm -rf $RPM_BUILD_ROOT
 %config(noreplace) %{_sysconfdir}/sysconfig/watchgit
 %defattr(-, watchgit, watchgit, 0755)
 %dir %attr(0755, root, root) %{_localstatedir}/log/watchgit
-%dir %attr(0755, root, root) %{_localstatedir}/run/watchgit
 
 %pre
 getent passwd watchgit &>/dev/null || \
