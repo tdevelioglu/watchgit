@@ -56,8 +56,8 @@ class Watcher(multiprocessing.Process):
 
     def run(self):
         os.seteuid(0)
-        os.setegid(self.gid)
-        os.seteuid(self.uid)
+        os.setgid(self.gid)
+        os.setuid(self.uid)
 
         # In case of nonexistent path or empty directory clone the repository.
         # Otherwise open it.
