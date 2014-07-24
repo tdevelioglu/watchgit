@@ -93,13 +93,11 @@ class Watcher(multiprocessing.Process):
         logger.info("Starting watch of repository at '%s'" % repo.working_dir)
         while True:
             logger.debug("Pulling ref '%s' for '%s'" % (self.ref, repo.working_dir))
-            try:
-                if self.reset is True and repo.is_dirty():
-                    logger.info("Resetting dirty repository at '%s'" % repo.working_dir)
-                    repo.head.reset(working_tree=True)
-                remote.pull(self.ref)
-            except Exception as e:
-                raise
+            if self.reset is True and repo.is_dirty():
+                logger.info("Resetting dirty repository at '%s'" % repo.working_dir)
+                repo.head.reset(working_tree=True)
+            remote.pull(self.ref)
+
             time.sleep(self.interval)
 
 ###########################################################################
