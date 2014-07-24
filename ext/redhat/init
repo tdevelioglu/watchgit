@@ -29,7 +29,7 @@ exec="/usr/sbin/watchgit"
 prog="watchgit"
 config="/etc/watchgit.conf"
 lockfile=/var/lock/subsys/$prog
-pidfile=/var/run/watchgit.pid
+pidfile=/var/run/watchgit/watchgit.pid
 
 [ -e /etc/sysconfig/watchgit ] && . /etc/sysconfig/watchgit
 
