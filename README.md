@@ -56,6 +56,7 @@ Watchgit is a daemon that keeps local git repositories in sync. It does this by 
 Global defaults and parameters such as logfile and loglevel are specified under the `GLOBAL` section.
 
     [GLOBAL]
+    all_remotes   = false
     interval      = 5
     ref           = master
     reset         = true
@@ -69,6 +70,7 @@ Global defaults and parameters such as logfile and loglevel are specified under 
 Individual repositories are specified as their own section with the name of the repository as the section name.
 
     [watchgit]
+    all_remotes   = true
     interval      = 300
     local         = /opt/watchgit/
     remote        = https://github.com/tdevelioglu/watchgit.git
@@ -79,6 +81,7 @@ Individual repositories are specified as their own section with the name of the 
 
 #### Global parameters
 
+* `all_remotes` - Whether to pull all git remotes in a repository's git configuration.
 * `interval` - How frequently to pull a repository's remote.
 * `ref` - Remote ref to use when pulling.
 * `reset` - Whether to reset the local HEAD before pulling.
@@ -89,6 +92,7 @@ Individual repositories are specified as their own section with the name of the 
 * `group` - Group to run the watchgit daemon as.
 
 #### Repo parameters
+* `all_remotes` - Whether to pull all git remotes in the repository's git configuration.
 * `interval` - How frequently to pull the repository's remote.
 * `local` - Local filesystem path to the repository.
 * `remote` - Url to the remote repository.
