@@ -41,6 +41,7 @@ class Watcher(multiprocessing.Process):
             self.uid = os.getuid()
             self.gid = os.getgid()
 
+        self.all_remotes   = config.getboolean(name, 'all_remotes')
         self.local         = config.get(name, 'local')
         self.remote        = config.get(name, 'remote')
         self.ref           = config.get(name, 'ref')
@@ -49,7 +50,9 @@ class Watcher(multiprocessing.Process):
         self.skip_on_error = config.getboolean(name, 'skip_on_error')
         self.user          = config.get(name, 'user')
         self.group         = config.get(name, 'group')
+
         super(Watcher, self).__init__(name=name)
+
         if daemon is not None:
             self.daemon = daemon
         self.start()
@@ -77,7 +80,11 @@ class Watcher(multiprocessing.Process):
                 repo.delete_remote('watchgit')
 
             logger.debug("Creating remote '%s' on repository '%s'" % (self.remote, self.name))
-            remote = repo.create_remote('watchgit', self.remote)
+            remotes = [repo.create_remote('watchgit', self.remote)]
+            
+            # if all_remotes is set we pull from all remotes
+            if self.all_remotes is True:
+                remotes = repo.remotes
 
         # If skip_on_error is true, we don't need to raise a fatal exception.
         # Instead we signal our watcher with the exitcode that we failed while
@@ -96,7 +103,9 @@ class Watcher(multiprocessing.Process):
             if self.reset is True and repo.is_dirty():
                 logger.info("Resetting dirty repository at '%s'" % repo.working_dir)
                 repo.head.reset(working_tree=True)
-            remote.pull(self.ref)
+            for remote in remotes:
+                logger.debug("Pulling remote '%s'", remote.name)
+                remote.pull(self.ref)
 
             time.sleep(self.interval)
 
@@ -196,13 +205,14 @@ if __name__ == "__main__":
     if args.command == 'start':
         # Init config
         defaults = {
-            'interval'     : 5,
-            'logfile'      : 'watchgit.log',
-            'loglevel'     : 'INFO',
-            'ref'          : 'master',
-            'reset'        : 'true',
-            'user'         : 'nobody',
-            'skip_on_error': 'false',
+            'all_remotes'      : 'false',
+            'interval'         : 5,
+            'logfile'          : 'watchgit.log',
+            'loglevel'         : 'INFO',
+            'ref'              : 'master',
+            'reset'            : 'true',
+            'user'             : 'nobody',
+            'skip_on_error'    : 'false',
         }
 
         config = GentleConfigParser()
