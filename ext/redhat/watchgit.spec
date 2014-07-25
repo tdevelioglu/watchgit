@@ -9,7 +9,7 @@
 
 Summary:       Keep local git repositories in sync
 Name:          watchgit
-Version:       0.2.0
+Version:       0.2.2
 Release:       1%{?dist}
 Source0:       https://github.com/tdevelioglu/watchgit/archive/%{version}.tar.gz
 License:       ASL 2.0
